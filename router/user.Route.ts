@@ -3,6 +3,11 @@ import {
   activateUser,
   myProfile,
   userRegistartion,
+  deleteProfile,
+  updateProfile,
+  updatePassword,
+  forgotPassword,
+  resetPassword
 } from "../controller/user.Controller";
 import { isLogIn } from "../middleware/authMiddleware";
 
@@ -12,5 +17,13 @@ userRouter.post("/register", userRegistartion);
 userRouter.post("/activate/:token", activateUser);
 
 userRouter.get("/me", isLogIn, myProfile);
+
+userRouter.delete("/remove-account/:id", isLogIn, deleteProfile);
+
+userRouter.put("/update-user", isLogIn, updateProfile);
+userRouter.put("/update-password", isLogIn, updatePassword);
+
+userRouter.post("/forget-password", forgotPassword);
+userRouter.put("/reset-password", resetPassword);
 
 export default userRouter;

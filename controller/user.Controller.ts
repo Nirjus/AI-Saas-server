@@ -3,8 +3,10 @@ import jsonwebtoken, { JwtPayload } from "jsonwebtoken";
 import createError from "http-errors";
 import { User } from "../model/user.Model";
 import createJWT from "../config/jsonwebtoken";
-import { frontendUrl, jwtActivationKey } from "../secret/secret";
+import { frontendUrl, jwtActivationKey, resetPassKey } from "../secret/secret";
 import { senEmail } from "../helper/sendEmail";
+import cloudinary from "cloudinary";
+import bcryptjs from "bcryptjs";
 
 interface IregestrationBody {
   name: string;
@@ -113,3 +115,166 @@ export const myProfile = async (
     next(createError(500, error));
   }
 };
+
+export const deleteProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.params.id;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw createError(404, "User not found");
+    }
+    if(user.avatar?.public_id){
+    await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+    }
+    await User.findByIdAndDelete(id);
+
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+
+    res.status(201).json({
+      success: true,
+      message: "User deleted successfully"
+    });
+  } catch (error: any) {
+    next(createError(500, error));
+  }
+};
+interface IUpdateUser{
+  name: string;
+  avatar:string;
+  address: string;
+  phoneNumber: number;
+}
+export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+
+  try {
+    const {name, avatar, address, phoneNumber} = req.body as IUpdateUser;
+           const id = req.user?._id;
+           const user = await User.findById(id);
+           if(!user){
+            throw createError(404, "user not found!");
+           }
+    if(name){
+      user.name = name
+    }
+    if(avatar){
+      if(user?.avatar?.public_id){
+        await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+
+        const myCloude = await cloudinary.v2.uploader.upload(avatar,{
+          folder: "AI-Saas"
+        });
+        user.avatar = {
+          public_id: myCloude.public_id,
+          url: myCloude.secure_url
+        }
+      }else{
+        const myCloude = await cloudinary.v2.uploader.upload(avatar,{
+          folder: "AI-Saas"
+        });
+        user.avatar = {
+          public_id: myCloude.public_id,
+          url: myCloude.secure_url
+        }
+      }
+    }
+    if(address){
+      user.address = address;
+    }
+    if(phoneNumber){
+      user.phoneNumber = phoneNumber;
+    }
+     await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: "User updated successfully",
+      user
+    })
+  } catch (error: any) {
+      next(createError(500, error));
+  }
+}
+
+export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+
+  try {
+    const id = req.user?._id
+    const user = await User.findById(id);
+   if(!user){
+    throw createError(404, 'user not found');
+   }
+   if(user?.password === undefined){
+           throw createError(404, "updtate password is not available in social Authentication")
+   }
+    const {oldPassword, newPassword, confirmPassword} = req.body;
+
+    const comparePassword1 = await bcryptjs.compare(oldPassword, user?.password);
+    
+    if(!comparePassword1){
+      throw createError(404, "Old Password is incorrect");
+    }
+    if(newPassword !== confirmPassword){
+      throw createError(404, "Confirm password not matched!");
+    }
+      const updateUser = await User.findByIdAndUpdate(id,{password:confirmPassword},{new: true});
+   if(!updateUser){
+    throw createError(500, "Password not updated");
+   }
+    res.status(201).json({
+      success: true,
+      message: "Password updated successfully",
+    })
+  } catch (error: any) {
+      next(createError(500, error));
+  }
+}
+export const forgotPassword = async (req: Request, res:Response, next: NextFunction) => {
+  try {
+    const {email} = req.body;
+    const user = await User.findOne({email:email});
+    if(!user){
+      throw createError(404, "this user not exists");
+    }
+     const token = createJWT({user},"5m",resetPassKey);
+     await senEmail({
+      subject: "Reset Password Email",
+      email: user?.email,
+      html: `
+           <h1>Hey ${user?.name}</h1>
+           <h1>Click below link, to reset your Password</h1>
+           <a href="${frontendUrl}/forgot-password/${token}" target="_blank">RESET PASSWORD</a>
+      `
+     })
+    res.status(201).json({
+      success: true,
+      message: `Please check your mail: ${user?.email} for reseating your password`,
+    })
+  } catch (error: any) {
+     next(createError(500, error));
+  }
+}
+
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {token, resetPassword}  = req.body;
+    const decoded = jsonwebtoken.verify(token, resetPassKey) as JwtPayload;
+
+    if(!decoded){
+      throw createError(404, "Invalid token");
+    }
+    const update = await User.findByIdAndUpdate(decoded.user?._id,{password:resetPassword},{new:true})
+     res.status(201).json({
+      success: true,
+      message: "Password reset successfully"
+     })
+  } catch (error: any) {
+     next(createError(500, error));
+  }
+}

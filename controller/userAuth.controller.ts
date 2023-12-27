@@ -28,11 +28,13 @@ export const LogIn = async (
     if (!user) {
       throw createError(404, "Please create an account, then try");
     }
+    if(user?.password !== undefined){
     const comparePassword = await bcryptJs.compare(password, user.password);
 
     if (!comparePassword) {
       throw createError(404, "Password not matched");
     }
+  }
     const accesskey = createJWT({ user }, "5m", accessToken);
     const refreshKey = createJWT({ user }, "7d", refeshToken);
     res.cookie("access_token", accesskey, {
@@ -84,7 +86,7 @@ export const socialAuth = async (
 ) => {
   try {
     const { name, email, socialAvatar } = req.body;
-    let user = await User.exists({ email: email });
+    let user = await User.findOne({ email: email });
     if (user) {
       const accesskey = createJWT({ user }, "5m", accessToken);
       const refreshKey = createJWT({ user }, "7d", refeshToken);
@@ -99,6 +101,12 @@ export const socialAuth = async (
         httpOnly: true,
         secure: true,
         sameSite: "none",
+      });
+      res.status(201).json({
+        success: true,
+        message: "User Login successfully",
+        user,
+         accesskey
       });
     } else {
       user = await User.create({
@@ -120,12 +128,14 @@ export const socialAuth = async (
         secure: true,
         sameSite: "none",
       });
+      res.status(201).json({
+        success: true,
+        message: "User Login successfully",
+        user,
+        accesskey
+      });
     }
-    res.status(201).json({
-      success: true,
-      message: "User Login successfully",
-      user,
-    });
+   
   } catch (error: any) {
     next(createError(500, error));
   }
@@ -144,7 +154,8 @@ export const updateAccessToken = async (
     if (!decoded) {
       throw createError(404, "Please Login");
     }
-    const accessKey = createJWT(decoded.user, "5m", accessToken);
+    const user = decoded.user;
+    const accessKey = createJWT({user}, "5m", accessToken);
 
     res.cookie("access_token", accessKey, {
       maxAge: 5 * 60 * 1000,

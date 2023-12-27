@@ -19,3 +19,11 @@ export const smtpPassword = process.env.SMTP_PASSWORD;
 export const accessToken = process.env.ACCESS_TOKEN || "HGKFxHG65$^#7GHJGC6r5";
 
 export const refeshToken = process.env.REFERESH_TOKEN || "MNHJkgFJGHfUrE%^&$3ghjk";
+
+export const cloud_name = process.env.CLOUD_NAME || "";
+
+export const cloud_api_key = process.env.CLOUD_API_KEY || "";
+
+export const cloud_api_secret = process.env.CLOUD_API_SECRET || "";
+
+export const resetPassKey = process.env.JWT_RESET_PASS_KEY || "VHGDgfdGFD%$%^$65DG65"

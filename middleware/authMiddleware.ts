@@ -1,8 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 import createError from "http-errors";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { accessToken } from "../secret/secret";
 import { updateAccessToken } from "../controller/userAuth.controller";
+import { User } from "../model/user.Model";
 
 export const isLogIn = async (
   req: Request,
@@ -19,7 +19,7 @@ export const isLogIn = async (
         next(createError(404, error));
       }
     } else {
-      const isVerified = jwt.verify(access_token, accessToken) as JwtPayload;
+      const isVerified = jwt.decode(access_token) as JwtPayload;
       if (!isVerified) {
         throw createError(400, "user not verified");
       }
