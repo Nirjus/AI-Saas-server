@@ -27,3 +27,5 @@ export const cloud_api_key = process.env.CLOUD_API_KEY || "";
 export const cloud_api_secret = process.env.CLOUD_API_SECRET || "";
 
 export const resetPassKey = process.env.JWT_RESET_PASS_KEY || "VHGDgfdGFD%$%^$65DG65"
+
+export const replicateToken = process.env.REPLICATE_TOKEN || "";

@@ -7,6 +7,11 @@ import createError from "http-errors";
 import { errorMiddleware } from "./utils/error";
 import userRouter from "./router/user.Route";
 import authRouter from "./router/auth.Route";
+import conversationRoute from "./router/conversation.Route";
+import musicRouter from "./router/music.Router";
+import videoRouter from "./router/video.Router";
+import imageRouter from "./router/image.Router";
+import codeRouter from "./router/code.Router";
 
 export const app = express();
 app.use(express.json({limit:"50mb"}));
@@ -21,6 +26,11 @@ app.use(cors({
 //  routes
 app.use("/api/user",userRouter)
 app.use("/api/auth",authRouter)
+app.use("/api/conversation",conversationRoute)
+app.use("/api/music", musicRouter)
+app.use("/api/video", videoRouter);
+app.use("/api/image", imageRouter);
+app.use("/api/code", codeRouter);
 
 app.get("/test",(req:Request, res: Response)=> {
     res.status(201).json({
