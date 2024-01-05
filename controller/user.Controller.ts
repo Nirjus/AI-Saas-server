@@ -278,3 +278,23 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
      next(createError(500, error));
   }
 }
+
+export const getCreditCount = async (req: Request, res:Response, next: NextFunction) => {
+
+  try {
+    const id = req.user?._id;
+    const user = await User.findById(id);
+
+    if(!user){
+      throw createError(404, "user not found");
+    }
+    const credit = user?.credit ? user?.credit : 0;
+  
+    res.status(201).json({
+      success: true,
+      credit
+    })
+  } catch (error: any) {
+    next(createError(500, error));
+  }
+}

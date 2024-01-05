@@ -4,6 +4,8 @@ import { User } from "../model/user.Model";
 import Replicate from "replicate";
 import { replicateToken } from "../secret/secret";
 import { Image } from "../model/image.Model";
+import { checkAPIlimit } from "../helper/checkApiLimit";
+import { Subscription } from "../model/subscription.Model";
 
 
 const replicate = new Replicate({
@@ -14,6 +16,7 @@ interface IImageGeneration{
     prompt: string;
     num: number;
 }
+const DAY_IN_MS = 86_400_000;
 
 export const imageGeneration = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -29,6 +32,16 @@ export const imageGeneration = async (req: Request, res: Response, next: NextFun
         }
         if(!num){
             throw createError(404, "Select Number of Image you want to generate");
+        }
+        const userSubscription = await Subscription.findOne({
+            userId: user?._id
+        })
+        const isValid = userSubscription?.stripePriceId && userSubscription.stripeCurrentPeriodEnd?.getTime() + DAY_IN_MS > Date.now();
+        
+        const freeTrail = await checkAPIlimit(user,id); 
+        
+        if(!freeTrail && !isValid){
+          throw createError(404, "You reached the free tier limit!");
         }
         const output:any = await replicate.run(
             "stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",

@@ -4,10 +4,14 @@ import { User } from "../model/user.Model";
 import Replicate from "replicate";
 import { replicateToken } from "../secret/secret";
 import { Code } from "../model/code.Mode";
+import { checkAPIlimit } from "../helper/checkApiLimit";
+import { Subscription } from "../model/subscription.Model";
 
 const replicate = new Replicate({
     auth: replicateToken
 })
+const DAY_IN_MS = 86_400_000;
+
 export const createCode = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = req.user?._id;
@@ -16,6 +20,16 @@ export const createCode = async (req: Request, res: Response, next: NextFunction
             throw createError(404, "User not found");
         }
         const {prompt} = req.body;
+        const userSubscription = await Subscription.findOne({
+          userId: user?._id
+      })
+      const isValid = userSubscription?.stripePriceId && userSubscription.stripeCurrentPeriodEnd?.getTime() + DAY_IN_MS > Date.now();
+    
+        const freeTrail = await checkAPIlimit(user,id); 
+       
+        if(!freeTrail && !isValid){
+          throw createError(404, "You reached the free tier limit!");
+        }
         const output:any = await replicate.run(
             "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3",
             {

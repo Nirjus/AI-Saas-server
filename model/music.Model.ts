@@ -3,6 +3,8 @@ import mongoose, { Document, Schema, Model } from "mongoose";
 export interface IMusic extends Document{
     prompt: string;
     music: string;
+    output_format: string;
+    duration: number;
     creatorId: string;
 }
 
@@ -14,6 +16,12 @@ const musicSchema:Schema<IMusic> = new mongoose.Schema({
      },
      music:{
         type: String,
+     },
+     output_format:{
+      type: String
+     },
+     duration:{
+      type: Number
      },
      creatorId:{
         type: String,

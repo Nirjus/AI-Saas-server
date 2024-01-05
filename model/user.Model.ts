@@ -8,6 +8,7 @@ export interface IUser extends Document{
     password: string;
     address: string;
     phoneNumber?: number;
+    credit?: number;
     avatar:{
         url:string;
         public_id: string;
@@ -56,6 +57,10 @@ const userSchema:Schema<IUser> = new mongoose.Schema({
     },
     socialAvatar:{
         type: String,
+    },
+    credit:{
+        type: Number,
+        default: 0,
     }
 },{timestamps: true})
 

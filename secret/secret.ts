@@ -28,4 +28,12 @@ export const cloud_api_secret = process.env.CLOUD_API_SECRET || "";
 
 export const resetPassKey = process.env.JWT_RESET_PASS_KEY || "VHGDgfdGFD%$%^$65DG65"
 
+export const maxFreeCredit = Number(process.env.MAX_FREE_CREDIT) || 5;
+
+export const stripePublishKey = process.env.STRIPE_PUBLISHABLE_KEY || "";
+
+export const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "";
+
+export const stripeWebhooks = process.env.STRIPE_WEBHOOK_SECRET || "";
+
 export const replicateToken = process.env.REPLICATE_TOKEN || "";

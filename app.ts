@@ -12,8 +12,12 @@ import musicRouter from "./router/music.Router";
 import videoRouter from "./router/video.Router";
 import imageRouter from "./router/image.Router";
 import codeRouter from "./router/code.Router";
+import subscriptionRouter from "./router/subscription.Rout";
+import { stripeWebhook } from "./controller/payment.Controller";
 
 export const app = express();
+app.use("/api/webhook", express.raw({type:'application/json'}) ,stripeWebhook);
+
 app.use(express.json({limit:"50mb"}));
 app.use(cookieParser());
 app.use(morgan("dev"));
@@ -31,6 +35,8 @@ app.use("/api/music", musicRouter)
 app.use("/api/video", videoRouter);
 app.use("/api/image", imageRouter);
 app.use("/api/code", codeRouter);
+app.use("/api/subscription", subscriptionRouter);
+
 
 app.get("/test",(req:Request, res: Response)=> {
     res.status(201).json({
