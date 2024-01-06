@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,10 +24,11 @@ const replicate = new replicate_1.default({
     auth: secret_1.replicateToken
 });
 const DAY_IN_MS = 86400000;
-const imageGeneration = async (req, res, next) => {
+const imageGeneration = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
-        const id = req.user?._id;
-        const user = await user_Model_1.User.findById(id);
+        const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+        const user = yield user_Model_1.User.findById(id);
         if (!user) {
             throw (0, http_errors_1.default)(404, "User not found");
         }
@@ -29,31 +39,31 @@ const imageGeneration = async (req, res, next) => {
         if (!num) {
             throw (0, http_errors_1.default)(404, "Select Number of Image you want to generate");
         }
-        const userSubscription = await subscription_Model_1.Subscription.findOne({
-            userId: user?._id
+        const userSubscription = yield subscription_Model_1.Subscription.findOne({
+            userId: user === null || user === void 0 ? void 0 : user._id
         });
-        const isValid = userSubscription?.stripePriceId && userSubscription.stripeCurrentPeriodEnd?.getTime() + DAY_IN_MS > Date.now();
-        const freeTrail = await (0, checkApiLimit_1.checkAPIlimit)(user, id);
+        const isValid = (userSubscription === null || userSubscription === void 0 ? void 0 : userSubscription.stripePriceId) && ((_b = userSubscription.stripeCurrentPeriodEnd) === null || _b === void 0 ? void 0 : _b.getTime()) + DAY_IN_MS > Date.now();
+        const freeTrail = yield (0, checkApiLimit_1.checkAPIlimit)(user, id);
         if (!freeTrail && !isValid) {
             throw (0, http_errors_1.default)(404, "You reached the free tier limit!");
         }
-        const output = await replicate.run("stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4", {
+        const output = yield replicate.run("stability-ai/stable-diffusion:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4", {
             input: {
                 prompt: prompt,
                 num_outputs: num
             }
         });
         console.log(output);
-        const picture = await image_Model_1.Image.create({
+        const picture = yield image_Model_1.Image.create({
             prompt: prompt,
-            creatorId: user?._id
+            creatorId: user === null || user === void 0 ? void 0 : user._id
         });
         output.map((format) => {
             picture.image.push({
                 imageUrl: format
             });
         });
-        await picture.save();
+        yield picture.save();
         res.status(201).json({
             success: true,
             output: picture.image
@@ -62,17 +72,18 @@ const imageGeneration = async (req, res, next) => {
     catch (error) {
         next((0, http_errors_1.default)(500, error));
     }
-};
+});
 exports.imageGeneration = imageGeneration;
-const getAllImage = async (req, res, next) => {
+const getAllImage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
     try {
-        const id = req.user?._id;
-        const user = await user_Model_1.User.findById(id);
+        const id = (_c = req.user) === null || _c === void 0 ? void 0 : _c._id;
+        const user = yield user_Model_1.User.findById(id);
         if (!user) {
             throw (0, http_errors_1.default)(404, "User not found");
         }
-        const images = await image_Model_1.Image.find({
-            creatorId: user?._id
+        const images = yield image_Model_1.Image.find({
+            creatorId: user === null || user === void 0 ? void 0 : user._id
         }).sort({ createdAt: -1 });
         if (!images) {
             throw (0, http_errors_1.default)(404, "No Image found");
@@ -85,5 +96,5 @@ const getAllImage = async (req, res, next) => {
     catch (error) {
         next((0, http_errors_1.default)(500, error));
     }
-};
+});
 exports.getAllImage = getAllImage;
