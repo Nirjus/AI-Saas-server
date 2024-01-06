@@ -82,17 +82,16 @@ export const getAllImage = async (req:Request, res: Response, next: NextFunction
         if(!user){
             throw createError(404, "User not found");
         }
-        const images = await Image.find().sort({createdAt: -1});
+        const images = await Image.find({
+            creatorId: user?._id
+        }).sort({createdAt: -1});
        if(!images){
         throw createError(404, "No Image found");
        }
-       const imgArray:any = [];
-        images && images.map((image:any) => (
-            image.creatorId === user?._id.toString() && imgArray.push(image)
-        ))
+
         res.status(201).json({
             success: true,
-            images: imgArray
+            images
         })
     } catch (error: any) {
         next(createError(500, error));

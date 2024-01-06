@@ -75,15 +75,13 @@ export const getAllConversation = async (req: Request, res: Response, next: Next
         if(!user){
             throw createError(404, "User not found");
         }
-        const conversations = await Conversation.find().sort({createdAt: -1});
-        const textArray:any = [];
-    conversations && conversations.map((conversation:any) => (
-      conversation.creatorId === user?._id.toString() && textArray.push(conversation)
-        ))
+        const conversations = await Conversation.find({
+            creatorId: user?._id
+        }).sort({createdAt: -1});
     
         res.status(201).json({
             success: true,
-            conversations: textArray
+            conversations
         })
     } catch (error: any) {
         next(createError(500, error));

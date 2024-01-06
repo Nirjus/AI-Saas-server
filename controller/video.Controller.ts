@@ -66,18 +66,16 @@ export const getAllVideo = async (req:Request, res: Response, next: NextFunction
         if(!user){
             throw createError(404, "User not found");
         }
-        const videos = await Video.find().sort({createdAt: -1});
+        const videos = await Video.find({
+            creatorId: user?._id
+        }).sort({createdAt: -1});
 
         if(!videos){
             throw createError(404, "No video is have till now");
         }
-        const videoArray:any = [];
-        videos && videos.map((video:any) => (
-            video.creatorId === user?._id.toString() && videoArray.push(video)
-        ))
         res.status(201).json({
             success: true,
-            videos: videoArray
+            videos
         })
     } catch (error: any) {
         next(createError(500, error));

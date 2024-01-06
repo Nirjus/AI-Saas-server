@@ -91,19 +91,16 @@ export const getAllMusic = async (
     if (!user) {
       throw createError(404, "User not found");
     }
-    const audios = await Music.find().sort({ createdAt: -1 });
+    const audios = await Music.find({
+      creatorId:user?._id
+    }).sort({ createdAt: -1 });
     if (!audios) {
       throw createError(404, "You not have any audio files");
     }
-    const musicArray: any = [];
-    audios &&
-      audios.map(
-        (audio: any) =>
-          audio.creatorId === user?._id.toString() && musicArray.push(audio)
-      );
+    
     res.status(201).json({
       success: true,
-      audios: musicArray,
+      audios,
     });
   } catch (error: any) {
     next(createError(500, error));

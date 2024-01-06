@@ -68,15 +68,14 @@ export const getAllcodes = async (req: Request, res: Response, next: NextFunctio
         if(!user) {
             throw createError(404, "User not found");
         }
-     const codes = await Code.find();
-     const codesArray:any = [];
-     codes && codes.map((code:any) => (
-            code.creatorId === user?._id.toString() && codesArray.push(code) 
-        ))
+     const codes = await Code.find({
+       creatorId: user?._id
+     }).sort({createdAt: -1});
+    
 
      res.status(201).json({
         success: true,
-        codesArray
+        codesArray: codes
      })
     } catch (error: any) {
         next(createError(500, error));
