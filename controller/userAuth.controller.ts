@@ -38,12 +38,14 @@ export const LogIn = async (
     const accesskey = createJWT({ user }, "5m", accessToken);
     const refreshKey = createJWT({ user }, "7d", refeshToken);
     res.cookie("access_token", accesskey, {
+      expires: new Date(Date.now() + 5 * 60 * 1000), // 5min
       maxAge: 5 * 60 * 1000,
       httpOnly: true,
       secure: true,
       sameSite: "none",
     });
     res.cookie("refresh_token", refreshKey, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 5min
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       secure: true,
