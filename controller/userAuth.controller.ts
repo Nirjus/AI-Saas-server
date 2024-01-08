@@ -69,14 +69,9 @@ export const logOut = async (
   next: NextFunction
 ) => {
   try {
-
-    const id = req.user?._id;
-    const user = await User.findById(id);
-    if(!user){
-      throw createError(404, "you not Loged In");
-    }
     res.clearCookie("access_token");
     res.clearCookie("refresh_token");
+
     res.status(200).json({
       success: true,
       message: "Logout Successfull",
