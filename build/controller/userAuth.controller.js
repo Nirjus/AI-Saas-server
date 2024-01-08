@@ -41,12 +41,14 @@ const LogIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         const accesskey = (0, jsonwebtoken_2.default)({ user }, "5m", secret_1.accessToken);
         const refreshKey = (0, jsonwebtoken_2.default)({ user }, "7d", secret_1.refeshToken);
         res.cookie("access_token", accesskey, {
+            expires: new Date(Date.now() + 5 * 60 * 1000), // 5min
             maxAge: 5 * 60 * 1000,
             httpOnly: true,
             secure: true,
             sameSite: "none",
         });
         res.cookie("refresh_token", refreshKey, {
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 5min
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: true,
