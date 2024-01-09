@@ -2,7 +2,7 @@ import mongoose,{Document, Schema, Model} from "mongoose";
 
 export interface IImage extends Document{
     prompt: string;
-    image: Array<{imageUrl:string}>;
+    image: Array<{url:string,public_id:string}>;
     creatorId: string;
 }
 
@@ -17,7 +17,12 @@ const imageSchema:Schema<IImage> = new mongoose.Schema({
     },
     image:[
         {
-            imageUrl: String,
+           public_id:{
+            type: String,
+           },
+           url:{
+            type: String,
+           }
         }
     ]
 },{

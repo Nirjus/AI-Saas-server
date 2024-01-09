@@ -2,7 +2,10 @@ import mongoose,{Document, Schema, Model} from "mongoose";
 
 export interface IVideo extends Document{
     prompt: string;
-    video: string;
+    video:{
+        public_id: string,
+        url: string,
+    };
     creatorId: string;
 }
 
@@ -13,7 +16,12 @@ const videoSchema:Schema<IVideo> = new mongoose.Schema({
         minlength: [6, "Prompt should be 6 character long"]
     },
     video:{
-        type: String
+        public_id:{
+            type: String,
+        },
+        url:{
+            type: String
+        }
     },
     creatorId:{
         type: String

@@ -6,7 +6,7 @@ import { replicateToken } from "../secret/secret";
 import { Image } from "../model/image.Model";
 import { checkAPIlimit } from "../helper/checkApiLimit";
 import { Subscription } from "../model/subscription.Model";
-
+import cloudinary from "cloudinary";
 
 const replicate = new Replicate({
     auth: replicateToken
@@ -53,16 +53,23 @@ export const imageGeneration = async (req: Request, res: Response, next: NextFun
             }
           );
           console.log(output);
-         
+
           const picture = await Image.create({
             prompt: prompt,
             creatorId: user?._id
           })
-          output.map((format:any) => {
-            picture.image.push({
-                imageUrl: format
-              })
-          })
+          const imageArray = [];
+          for(let i=0; i<output.length; i++){
+            const myCloude = await cloudinary.v2.uploader.upload(output[i],{
+                folder: "AI-Saas"
+            })
+            imageArray.push({
+                public_id: myCloude.public_id,
+                url: myCloude.secure_url
+            })
+          }
+          picture.image = imageArray;
+          
           await picture.save();
             
         res.status(201).json({

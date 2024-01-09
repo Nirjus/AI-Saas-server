@@ -6,6 +6,7 @@ import { maxFreeCredit, replicateToken } from "../secret/secret";
 import { Video } from "../model/video.model";
 import { checkAPIlimit } from "../helper/checkApiLimit";
 import { Subscription } from "../model/subscription.Model";
+import cloudinary from "cloudinary";
 
 const replicate = new Replicate({
     auth: replicateToken
@@ -44,9 +45,16 @@ export const videoGeneration = async (req: Request, res: Response, next: NextFun
               }
             }
           );
+          const myCloude = await cloudinary.v2.uploader.upload(output[0],{
+            folder: "AI-Saas",
+            resource_type: "video"
+          })
           const video = await Video.create({
             prompt: prompt,
-            video: output[0],
+            video:{
+                public_id: myCloude.public_id,
+                url: myCloude.secure_url
+            },
             creatorId: user?._id
           })
         res.status(201).json({

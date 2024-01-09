@@ -6,6 +6,7 @@ import { replicateToken } from "../secret/secret";
 import { Music } from "../model/music.Model";
 import { checkAPIlimit } from "../helper/checkApiLimit";
 import { Subscription } from "../model/subscription.Model";
+import cloudinary from "cloudinary";
 
 const replicate = new Replicate({
   auth: replicateToken,
@@ -63,9 +64,16 @@ const isValid = userSubscription?.stripePriceId && userSubscription.stripeCurren
         },
       }
     );
+    const myCloude = await cloudinary.v2.uploader.upload(output,{
+      folder: "AI-Saas",
+      resource_type: "video"
+    })
     const music = await Music.create({
       prompt: prompt,
-      music: output,
+      music:{
+        public_id: myCloude.public_id,
+        url: myCloude.secure_url
+      },
       output_format: format,
       duration: duration,
       creatorId: user?._id,
