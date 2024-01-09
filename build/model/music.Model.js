@@ -12,7 +12,12 @@ const musicSchema = new mongoose_1.default.Schema({
         minlength: [3, "Minimum 3 character is required"]
     },
     music: {
-        type: String,
+        public_id: {
+            type: String,
+        },
+        url: {
+            type: String
+        }
     },
     output_format: {
         type: String

@@ -20,6 +20,7 @@ const secret_1 = require("../secret/secret");
 const video_model_1 = require("../model/video.model");
 const checkApiLimit_1 = require("../helper/checkApiLimit");
 const subscription_Model_1 = require("../model/subscription.Model");
+const cloudinary_1 = __importDefault(require("cloudinary"));
 const replicate = new replicate_1.default({
     auth: secret_1.replicateToken
 });
@@ -49,9 +50,16 @@ const videoGeneration = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
                 prompt: prompt
             }
         });
+        const myCloude = yield cloudinary_1.default.v2.uploader.upload(output[0], {
+            folder: "AI-Saas",
+            resource_type: "video"
+        });
         const video = yield video_model_1.Video.create({
             prompt: prompt,
-            video: output[0],
+            video: {
+                public_id: myCloude.public_id,
+                url: myCloude.secure_url
+            },
             creatorId: user === null || user === void 0 ? void 0 : user._id
         });
         res.status(201).json({

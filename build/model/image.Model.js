@@ -16,7 +16,12 @@ const imageSchema = new mongoose_1.default.Schema({
     },
     image: [
         {
-            imageUrl: String,
+            public_id: {
+                type: String,
+            },
+            url: {
+                type: String,
+            }
         }
     ]
 }, {

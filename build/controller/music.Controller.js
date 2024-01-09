@@ -20,6 +20,7 @@ const secret_1 = require("../secret/secret");
 const music_Model_1 = require("../model/music.Model");
 const checkApiLimit_1 = require("../helper/checkApiLimit");
 const subscription_Model_1 = require("../model/subscription.Model");
+const cloudinary_1 = __importDefault(require("cloudinary"));
 const replicate = new replicate_1.default({
     auth: secret_1.replicateToken,
 });
@@ -66,9 +67,16 @@ const createMusic = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
                 classifier_free_guidance: 3,
             },
         });
+        const myCloude = yield cloudinary_1.default.v2.uploader.upload(output, {
+            folder: "AI-Saas",
+            resource_type: "video"
+        });
         const music = yield music_Model_1.Music.create({
             prompt: prompt,
-            music: output,
+            music: {
+                public_id: myCloude.public_id,
+                url: myCloude.secure_url
+            },
             output_format: format,
             duration: duration,
             creatorId: user === null || user === void 0 ? void 0 : user._id,

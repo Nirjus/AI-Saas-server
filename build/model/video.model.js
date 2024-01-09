@@ -12,7 +12,12 @@ const videoSchema = new mongoose_1.default.Schema({
         minlength: [6, "Prompt should be 6 character long"]
     },
     video: {
-        type: String
+        public_id: {
+            type: String,
+        },
+        url: {
+            type: String
+        }
     },
     creatorId: {
         type: String

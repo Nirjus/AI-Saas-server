@@ -20,6 +20,7 @@ const secret_1 = require("../secret/secret");
 const image_Model_1 = require("../model/image.Model");
 const checkApiLimit_1 = require("../helper/checkApiLimit");
 const subscription_Model_1 = require("../model/subscription.Model");
+const cloudinary_1 = __importDefault(require("cloudinary"));
 const replicate = new replicate_1.default({
     auth: secret_1.replicateToken
 });
@@ -58,11 +59,17 @@ const imageGeneration = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             prompt: prompt,
             creatorId: user === null || user === void 0 ? void 0 : user._id
         });
-        output.map((format) => {
-            picture.image.push({
-                imageUrl: format
+        const imageArray = [];
+        for (let i = 0; i < output.length; i++) {
+            const myCloude = yield cloudinary_1.default.v2.uploader.upload(output[i], {
+                folder: "AI-Saas"
             });
-        });
+            imageArray.push({
+                public_id: myCloude.public_id,
+                url: myCloude.secure_url
+            });
+        }
+        picture.image = imageArray;
         yield picture.save();
         res.status(201).json({
             success: true,
