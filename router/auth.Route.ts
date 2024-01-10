@@ -5,7 +5,7 @@ import { isLogIn } from "../middleware/authMiddleware";
 const authRouter = express.Router();
 
 authRouter.post("/login", LogIn);
-authRouter.get("/logout", isLogIn,logOut);
+authRouter.get("/logout", logOut);
 
 authRouter.post("/social-auth", socialAuth);
 export default authRouter;
