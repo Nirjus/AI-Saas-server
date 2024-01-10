@@ -69,8 +69,16 @@ export const logOut = async (
   next: NextFunction
 ) => {
   try {
-    res.clearCookie("access_token");
-    res.clearCookie("refresh_token");
+    res.clearCookie("access_token",{
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    });
+    res.clearCookie("refresh_token",{
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"
+    });
 
     res.status(200).json({
       success: true,
