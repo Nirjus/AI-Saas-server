@@ -18,6 +18,7 @@ const music_Router_1 = __importDefault(require("./router/music.Router"));
 const video_Router_1 = __importDefault(require("./router/video.Router"));
 const image_Router_1 = __importDefault(require("./router/image.Router"));
 const code_Router_1 = __importDefault(require("./router/code.Router"));
+const analytics_Router_1 = __importDefault(require("./router/analytics.Router"));
 const subscription_Rout_1 = __importDefault(require("./router/subscription.Rout"));
 const payment_Controller_1 = require("./controller/payment.Controller");
 exports.app = (0, express_1.default)();
@@ -37,6 +38,7 @@ exports.app.use("/api/music", music_Router_1.default);
 exports.app.use("/api/video", video_Router_1.default);
 exports.app.use("/api/image", image_Router_1.default);
 exports.app.use("/api/code", code_Router_1.default);
+exports.app.use("/api/analytics", analytics_Router_1.default);
 exports.app.use("/api/subscription", subscription_Rout_1.default);
 exports.app.get("/test", (req, res) => {
     res.status(201).json({

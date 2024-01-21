@@ -12,6 +12,7 @@ import musicRouter from "./router/music.Router";
 import videoRouter from "./router/video.Router";
 import imageRouter from "./router/image.Router";
 import codeRouter from "./router/code.Router";
+import analyticsRouter from "./router/analytics.Router";
 import subscriptionRouter from "./router/subscription.Rout";
 import { stripeWebhook } from "./controller/payment.Controller";
 
@@ -35,6 +36,7 @@ app.use("/api/music", musicRouter)
 app.use("/api/video", videoRouter);
 app.use("/api/image", imageRouter);
 app.use("/api/code", codeRouter);
+app.use("/api/analytics", analyticsRouter);
 app.use("/api/subscription", subscriptionRouter);
 
 
