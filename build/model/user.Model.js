@@ -38,6 +38,10 @@ const userSchema = new mongoose_1.default.Schema({
     phoneNumber: {
         type: Number,
     },
+    role: {
+        type: String,
+        default: "user"
+    },
     avatar: {
         public_id: {
             type: String,

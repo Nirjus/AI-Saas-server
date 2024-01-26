@@ -15,6 +15,7 @@ import codeRouter from "./router/code.Router";
 import analyticsRouter from "./router/analytics.Router";
 import subscriptionRouter from "./router/subscription.Rout";
 import { stripeWebhook } from "./controller/payment.Controller";
+import messageRouter from "./router/message.Router";
 
 export const app = express();
 app.use("/api/webhook", express.raw({type:'application/json'}) ,stripeWebhook);
@@ -36,6 +37,7 @@ app.use("/api/music", musicRouter)
 app.use("/api/video", videoRouter);
 app.use("/api/image", imageRouter);
 app.use("/api/code", codeRouter);
+app.use("/api/messages", messageRouter);
 app.use("/api/analytics", analyticsRouter);
 app.use("/api/subscription", subscriptionRouter);
 

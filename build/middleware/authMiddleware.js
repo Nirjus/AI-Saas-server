@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isLogIn = void 0;
+exports.isAdmin = exports.isLogIn = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userAuth_controller_1 = require("../controller/userAuth.controller");
+const user_Model_1 = require("../model/user.Model");
 const isLogIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { access_token } = req.cookies;
@@ -41,3 +42,23 @@ const isLogIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.isLogIn = isLogIn;
+const isAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
+        const user = yield user_Model_1.User.findById(id);
+        if (!user) {
+            throw (0, http_errors_1.default)(404, "user not found");
+        }
+        if (user.role === "Admin") {
+            next();
+        }
+        else {
+            throw (0, http_errors_1.default)(404, "you are not authorized to access this resourses");
+        }
+    }
+    catch (error) {
+        next((0, http_errors_1.default)(500, error));
+    }
+});
+exports.isAdmin = isAdmin;

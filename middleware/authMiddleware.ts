@@ -30,3 +30,24 @@ export const isLogIn = async (
     next(createError(500, error));
   }
 };
+
+export const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
+
+  try {
+       const id = req.user?._id;
+
+       const user = await User.findById(id); 
+       if(!user){
+        throw createError(404, "user not found");
+       }
+
+       if(user.role === "Admin"){
+        next()
+       }else{
+        throw createError(404, "you are not authorized to access this resourses");
+       }
+       
+  } catch (error: any) {
+     next(createError(500, error));
+  }
+}

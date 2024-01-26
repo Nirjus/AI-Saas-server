@@ -140,3 +140,19 @@ export const checkSubscription = async (req:Request, res: Response, next: NextFu
         next(createError(500, error));
     }
 }
+
+export const getSubscriber = async (req: Request, res: Response, next: NextFunction) => {
+   try {
+    const subscribers = await Subscription.find({});
+
+    if(!subscribers){
+        throw createError(404, "No subscribers found");
+    }
+    res.status(201).json({
+        success: true,
+        subscribers
+    })
+   } catch (error:any) {
+      next(createError(500, error));
+   }
+}

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCreditCount = exports.resetPassword = exports.forgotPassword = exports.updatePassword = exports.updateProfile = exports.deleteProfile = exports.myProfile = exports.activateUser = exports.userRegistartion = void 0;
+exports.deleteUser = exports.getAllUser = exports.getCreditCount = exports.resetPassword = exports.forgotPassword = exports.updatePassword = exports.updateProfile = exports.deleteProfile = exports.myProfile = exports.activateUser = exports.userRegistartion = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_errors_1 = __importDefault(require("http-errors"));
 const user_Model_1 = require("../model/user.Model");
@@ -276,3 +276,43 @@ const getCreditCount = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getCreditCount = getCreditCount;
+const getAllUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield user_Model_1.User.find({ role: "user" }).sort({ createdAt: -1 });
+        if (!users) {
+            throw (0, http_errors_1.default)(404, "something went wrong");
+        }
+        res.status(201).json({
+            success: true,
+            users
+        });
+    }
+    catch (error) {
+        next((0, http_errors_1.default)(500, error));
+    }
+});
+exports.getAllUser = getAllUser;
+const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _k;
+    try {
+        const id = req.params.id;
+        const user = yield user_Model_1.User.findById(id);
+        console.log(user);
+        if (!user) {
+            throw (0, http_errors_1.default)(404, 'user not found with this id');
+        }
+        const imageId = (_k = user === null || user === void 0 ? void 0 : user.avatar) === null || _k === void 0 ? void 0 : _k.public_id;
+        if (imageId) {
+            yield cloudinary_1.default.v2.uploader.destroy(imageId);
+        }
+        yield user.deleteOne();
+        res.status(201).json({
+            success: true,
+            message: 'user removed from database'
+        });
+    }
+    catch (error) {
+        next((0, http_errors_1.default)(500, error));
+    }
+});
+exports.deleteUser = deleteUser;

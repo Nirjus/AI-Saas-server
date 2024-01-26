@@ -16,4 +16,7 @@ userRouter.put("/update-password", authMiddleware_1.isLogIn, user_Controller_1.u
 userRouter.post("/forget-password", user_Controller_1.forgotPassword);
 userRouter.put("/reset-password", user_Controller_1.resetPassword);
 userRouter.get("/credit-count", authMiddleware_1.isLogIn, user_Controller_1.getCreditCount);
+//  admin route
+userRouter.get("/get-allUser", authMiddleware_1.isLogIn, authMiddleware_1.isAdmin, user_Controller_1.getAllUser);
+userRouter.delete("/delete-user/:id", authMiddleware_1.isLogIn, authMiddleware_1.isAdmin, user_Controller_1.deleteUser);
 exports.default = userRouter;

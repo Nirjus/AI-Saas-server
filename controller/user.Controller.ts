@@ -298,3 +298,44 @@ export const getCreditCount = async (req: Request, res:Response, next: NextFunct
     next(createError(500, error));
   }
 }
+
+export const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+       const users = await User.find({role:"user"}).sort({createdAt: -1});
+
+       if(!users){
+        throw createError(404, "something went wrong");
+       }
+
+       res.status(201).json({
+        success: true,
+        users
+       })
+  } catch (error: any) {
+     next(createError(500, error));
+  }
+}
+
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+      const id = req.params.id;
+
+      const user = await User.findById(id);
+      console.log(user)
+      if(!user){
+        throw createError(404, 'user not found with this id');
+      }
+      const imageId = user?.avatar?.public_id;
+     if(imageId){
+      await cloudinary.v2.uploader.destroy(imageId);
+     }
+    await user.deleteOne();
+
+    res.status(201).json({
+      success: true,
+      message: 'user removed from database'
+    })
+  } catch (error: any) {
+     next(createError(500, error));
+  }
+}

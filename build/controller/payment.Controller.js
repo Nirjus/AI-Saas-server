@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkSubscription = exports.stripeWebhook = exports.stripeCheckout = exports.stripe = void 0;
+exports.getSubscriber = exports.checkSubscription = exports.stripeWebhook = exports.stripeCheckout = exports.stripe = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 const stripe_1 = __importDefault(require("stripe"));
 const secret_1 = require("../secret/secret");
@@ -142,3 +142,19 @@ const checkSubscription = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.checkSubscription = checkSubscription;
+const getSubscriber = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const subscribers = yield subscription_Model_1.Subscription.find({});
+        if (!subscribers) {
+            throw (0, http_errors_1.default)(404, "No subscribers found");
+        }
+        res.status(201).json({
+            success: true,
+            subscribers
+        });
+    }
+    catch (error) {
+        next((0, http_errors_1.default)(500, error));
+    }
+});
+exports.getSubscriber = getSubscriber;

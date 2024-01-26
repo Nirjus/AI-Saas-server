@@ -21,6 +21,7 @@ const code_Router_1 = __importDefault(require("./router/code.Router"));
 const analytics_Router_1 = __importDefault(require("./router/analytics.Router"));
 const subscription_Rout_1 = __importDefault(require("./router/subscription.Rout"));
 const payment_Controller_1 = require("./controller/payment.Controller");
+const message_Router_1 = __importDefault(require("./router/message.Router"));
 exports.app = (0, express_1.default)();
 exports.app.use("/api/webhook", express_1.default.raw({ type: 'application/json' }), payment_Controller_1.stripeWebhook);
 exports.app.use(express_1.default.json({ limit: "50mb" }));
@@ -38,6 +39,7 @@ exports.app.use("/api/music", music_Router_1.default);
 exports.app.use("/api/video", video_Router_1.default);
 exports.app.use("/api/image", image_Router_1.default);
 exports.app.use("/api/code", code_Router_1.default);
+exports.app.use("/api/messages", message_Router_1.default);
 exports.app.use("/api/analytics", analytics_Router_1.default);
 exports.app.use("/api/subscription", subscription_Rout_1.default);
 exports.app.get("/test", (req, res) => {

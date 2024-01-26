@@ -32,11 +32,12 @@ const LogIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         if (!user) {
             throw (0, http_errors_1.default)(404, "Please create an account, then try");
         }
-        if ((user === null || user === void 0 ? void 0 : user.password) !== undefined) {
-            const comparePassword = yield bcryptjs_1.default.compare(password, user.password);
-            if (!comparePassword) {
-                throw (0, http_errors_1.default)(404, "Password not matched");
-            }
+        if ((user === null || user === void 0 ? void 0 : user.password) == undefined) {
+            throw (0, http_errors_1.default)(404, "choose social login");
+        }
+        const comparePassword = yield bcryptjs_1.default.compare(password, user.password);
+        if (!comparePassword) {
+            throw (0, http_errors_1.default)(404, "Password not matched");
         }
         const accesskey = (0, jsonwebtoken_2.default)({ user }, "5m", secret_1.accessToken);
         const refreshKey = (0, jsonwebtoken_2.default)({ user }, "7d", secret_1.refeshToken);

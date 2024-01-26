@@ -8,9 +8,11 @@ import {
   updatePassword,
   forgotPassword,
   resetPassword,
-  getCreditCount
+  getCreditCount,
+  getAllUser,
+  deleteUser
 } from "../controller/user.Controller";
-import { isLogIn } from "../middleware/authMiddleware";
+import { isAdmin, isLogIn } from "../middleware/authMiddleware";
 
 const userRouter = express.Router();
 
@@ -29,4 +31,7 @@ userRouter.put("/reset-password", resetPassword);
 
 userRouter.get("/credit-count", isLogIn, getCreditCount);
 
+//  admin route
+userRouter.get("/get-allUser", isLogIn, isAdmin, getAllUser);
+userRouter.delete("/delete-user/:id", isLogIn, isAdmin, deleteUser);
 export default userRouter;

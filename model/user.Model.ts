@@ -9,6 +9,7 @@ export interface IUser extends Document{
     address: string;
     phoneNumber?: number;
     credit?: number;
+    role: string;
     avatar:{
         url:string;
         public_id: string;
@@ -46,6 +47,10 @@ const userSchema:Schema<IUser> = new mongoose.Schema({
     },
     phoneNumber:{
         type: Number,
+    },
+    role:{
+        type: String,
+        default: "user"
     },
     avatar:{
         public_id:{

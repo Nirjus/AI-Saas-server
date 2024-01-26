@@ -28,13 +28,14 @@ export const LogIn = async (
     if (!user) {
       throw createError(404, "Please create an account, then try");
     }
-    if(user?.password !== undefined){
+    if(user?.password == undefined){
+      throw createError(404, "choose social login");
+    }
     const comparePassword = await bcryptJs.compare(password, user.password);
 
     if (!comparePassword) {
       throw createError(404, "Password not matched");
     }
-  }
     const accesskey = createJWT({ user }, "5m", accessToken);
     const refreshKey = createJWT({ user }, "7d", refeshToken);
     res.cookie("access_token", accesskey, {
