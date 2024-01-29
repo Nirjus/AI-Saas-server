@@ -45,8 +45,7 @@ export const messageCreation = async (req: Request, res: Response, next: NextFun
 
 export const getMessage = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = req.params.id;
-
+        const id = req.query.id as string;
         const user = await User.findById(id);
         if(!user){
             throw createError(404, "user not found");

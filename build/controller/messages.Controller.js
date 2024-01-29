@@ -58,7 +58,7 @@ const messageCreation = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 exports.messageCreation = messageCreation;
 const getMessage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const id = req.params.id;
+        const id = req.query.id;
         const user = yield user_Model_1.User.findById(id);
         if (!user) {
             throw (0, http_errors_1.default)(404, "user not found");
